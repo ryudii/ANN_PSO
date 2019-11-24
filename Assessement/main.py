@@ -40,11 +40,11 @@ def set_up_neural_network(dataset, settings):
 # Function you modify to change all the hyperparameters
 # There is no need think about the input layer here.
 def choose_settings():
-    number_of_neurons_per_layer = [2, 2, 2]
+    number_of_neurons_per_layer = [2, 2, 2, 2, 2]
     number_of_layers = len(number_of_neurons_per_layer)
-    number_of_particles = 30
+    number_of_particles = 100
     number_of_pso_iteration = 100
-    bounds = [-2, 2]
+    bounds = [-20, 20]
     settings = [number_of_layers, number_of_neurons_per_layer, number_of_particles, number_of_pso_iteration, bounds]
     return settings
 
@@ -82,37 +82,43 @@ def retrieve_activation_functions_vector_only(vector, number_of_inputs):
         if index % 2 == 1:
             activation_function_vector.append(abs(int((vector[index + number_of_inputs] * 100) % 5)))
         index += 1
-    print(activation_function_vector)
+    return activation_function_vector
 
 
 # This function is the last call of the whole program.
 # It's here we take care of keeping all the infos we need to do stats and
 # have a better understanding of what happen with hyperparameters changes
-def use_final_results(vector_list, cost_list, name_list):
+def use_final_results(vector_list, cost_list, name_list, settings):
+    f = open("new_results.txt", "a")
     index = 0
     for vector in vector_list:
-        retrieve_activation_functions_vector_only(vector, int(name_list[index][0]))
+        af_list = retrieve_activation_functions_vector_only(vector, int(name_list[index][0]))
+        f.write(name_list[index][:-4] + "," + str(sum(settings[1])) + "," + str(settings[0]) + "," +
+                str(settings[2]) + "," + str(settings[3]) + "," + str(settings[4][1]) + "," + str(settings[4][0]) + "," +
+                str(cost_list[index]) + "," +
+                str(af_list.count(0)) + "," + str(af_list.count(1)) + "," + str(af_list.count(2)) + "," +
+                str(af_list.count(3)) + "," + str(af_list.count(4)) + "\n")
         index += 1
-    print(sum(cost_list) / len(cost_list))
-
 
 # index help us go through each file we have to work on.
 # cost_list vector_list name_list are used to get the infos from the pso. It will host all the results
 # settings will host all the hyperparameters of the ANN and PSO. More infos above choose_settings() function
 if __name__ == '__main__':
-    begin_time = time.time()
-    index = 1
-    cost_list = []
-    vector_list = []
-    name_list = []
-    settings = choose_settings()
-    while index != len(sys.argv):
-        dataset = import_dataset(sys.argv[index])
-        neural_network = set_up_neural_network(dataset, settings)
-        vector, cost = pso.particle_swarm_optimisation(settings, neural_network, dataset)
-        vector_list, cost_list, name_list = use_result_of_this_loop(vector, cost, sys.argv[index][5:], vector_list, cost_list, name_list)
-        index += 1
-    use_final_results(vector_list, cost_list, name_list)
-    end_time = time.time()
-    print("It took : " + str(end_time - begin_time) + " seconds")
+    for x in range(0, 100):
+        print(x)
+        begin_time = time.time()
+        index = 1
+        cost_list = []
+        vector_list = []
+        name_list = []
+        settings = choose_settings()
+        while index != len(sys.argv):
+            dataset = import_dataset(sys.argv[index])
+            neural_network = set_up_neural_network(dataset, settings)
+            vector, cost = pso.particle_swarm_optimisation(settings, neural_network, dataset)
+            vector_list, cost_list, name_list = use_result_of_this_loop(vector, cost, sys.argv[index][5:], vector_list, cost_list, name_list)
+            index += 1
+        end_time = time.time()
+        use_final_results(vector_list, cost_list, name_list, settings)
+        print("It took : " + str(end_time - begin_time) + " seconds")
 
