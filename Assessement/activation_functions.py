@@ -10,7 +10,7 @@ def sigmoid_activation_function(value):
 
 
 def hyperbolic_tangent_activation_function(value):
-    return np.tanh(value)
+    return 1/(1+np.exp(-value))
 
 
 def cosine_activation_function(value):

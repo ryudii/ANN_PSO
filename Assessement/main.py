@@ -43,7 +43,7 @@ def choose_settings():
     number_of_neurons_per_layer = [2, 2, 2, 2, 2]
     number_of_layers = len(number_of_neurons_per_layer)
     number_of_particles = 100
-    number_of_pso_iteration = 100
+    number_of_pso_iteration = 101
     bounds = [-20, 20]
     settings = [number_of_layers, number_of_neurons_per_layer, number_of_particles, number_of_pso_iteration, bounds]
     return settings
@@ -99,6 +99,7 @@ def use_final_results(vector_list, cost_list, name_list, settings):
                 str(af_list.count(0)) + "," + str(af_list.count(1)) + "," + str(af_list.count(2)) + "," +
                 str(af_list.count(3)) + "," + str(af_list.count(4)) + "\n")
         index += 1
+
 
 # index help us go through each file we have to work on.
 # cost_list vector_list name_list are used to get the infos from the pso. It will host all the results

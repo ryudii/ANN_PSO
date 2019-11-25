@@ -89,6 +89,9 @@ class Neuron:
 
 class NeuralNetwork:
     def __init__(self):
+        self.mean_result_list = []
+        self.mean_desired_result_list = []
+        self.mse = []
         self.list_of_layers = []
 
     def get_answer(self):

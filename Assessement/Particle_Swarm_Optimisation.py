@@ -1,4 +1,16 @@
 import random
+import matplotlib.pyplot as plt
+
+
+def draw_graph(neural_network):
+    x_axis = range(0, len(neural_network.mse))
+    plt.cla()
+    plt.ion()
+    plt.plot(x_axis, neural_network.mean_desired_result_list, "b")
+    plt.plot(x_axis, neural_network.mean_result_list, "g")
+    plt.draw()
+    plt.show()
+    plt.pause(0.01)
 
 
 # cost function with an MSE
@@ -6,11 +18,20 @@ import random
 # sample[:-1] represent all the inputs. sample[-1] represent the answer to the input as given in the dataset
 def cost_function(position_vector, neural_network, dataset):
     sample_error_list = []
+    neural_network_try_list = []
+    desired_output_list = []
     for sample in dataset:
         neural_network.list_of_layers[0].update_inputs(sample[:-1])
         neural_network.replace_with_new_vector_and_update(position_vector)
         neural_network_try = neural_network.get_answer()
+        neural_network_try_list.append(neural_network_try)
+        desired_output_list.append(float(sample[-1]))
         sample_error_list.append(float(sample[-1]) - neural_network_try)
+    neural_network.mean_result_list.append(sum(neural_network_try_list) / len(neural_network_try_list))
+    neural_network.mean_desired_result_list.append(sum(desired_output_list) / len(desired_output_list))
+    neural_network.mse.append((1 / len(sample_error_list)) * sum(sample_error_list) * sum(sample_error_list))
+    if len(neural_network.mse) % 100 == 0:
+        draw_graph(neural_network)
     return (1 / len(sample_error_list)) * sum(sample_error_list) * sum(sample_error_list)
 
 
@@ -80,7 +101,6 @@ def particle_swarm_optimisation(settings, neural_network, dataset):
     while global_loop_turn < maxiter:
         for index in range(0, nb_particles):
             swarm.particle_list[index].err = cost_function(swarm.particle_list[index].position, neural_network, dataset)
-
             if swarm.particle_list[index].err_best > swarm.particle_list[index].err or swarm.particle_list[index].err_best == -1:
                 swarm.particle_list[index].err_best = swarm.particle_list[index].err
                 swarm.particle_list[index].pos_best = swarm.particle_list[index].position
